@@ -19,6 +19,6 @@ async def on_message(message):
         return
 
     if message.content.startswith('meow'):
-        await message.reply('Meow!')
+        await message.reply('Meow! <a:meowieCatKiss:1151597399807111288>')
 
 client.run(config['token'])
