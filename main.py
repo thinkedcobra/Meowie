@@ -11,7 +11,7 @@ client = discord.Client(intents=intents)
 
 @client.event
 async def on_ready():
-    print(f':3 {client.user}')
+    print(f'>:3 {client.user}')
 
 @client.event
 async def on_message(message):
