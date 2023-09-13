@@ -1,4 +1,8 @@
 import discord
+import yaml
+
+with open("config.yaml", "r") as f:
+    config = yaml.load(f, Loader=yaml.FullLoader)
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -14,7 +18,7 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    if message.content.startswith('$meow'):
+    if message.content.startswith('meow'):
         await message.channel.send('Meow!')
 
-client.run('MTE1MTQ4MzkyMDIzMjIyNjg5Nw.GiXnhs.o-KqiNvx8B7LusKDOAqj8ES8yfGBtIcNfHSqns')
+client.run(config['token'])
