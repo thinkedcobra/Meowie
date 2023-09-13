@@ -11,7 +11,7 @@ client = discord.Client(intents=intents)
 
 @client.event
 async def on_ready():
-    print(f'We have logged in as {client.user}')
+    print(f':3 {client.user}')
 
 @client.event
 async def on_message(message):
@@ -19,6 +19,6 @@ async def on_message(message):
         return
 
     if message.content.startswith('meow'):
-        await message.channel.send('Meow!')
+        await message.reply('Meow!')
 
 client.run(config['token'])
