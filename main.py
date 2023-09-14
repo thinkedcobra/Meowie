@@ -1,50 +1,50 @@
 import discord
+from discord.ext import commands
+import youtube_dl
 import yaml
-import random
 
+# Load bot settings from config.yaml
+with open('config.yaml', 'r') as config_file:
+    config = yaml.safe_load(config_file)
 
-with open("config.yaml", "r") as f:
-    config = yaml.load(f, Loader=yaml.FullLoader)
-
-
-
+# Define the intents for your bot
 intents = discord.Intents.default()
-intents.message_content = True
+intents.typing = False
+intents.presences = False
 
-client = discord.Client(intents=intents)
+# Create a bot instance with intents
+bot = commands.Bot(command_prefix=config['prefix'], intents=intents)
 
-@client.event
+@bot.event
 async def on_ready():
-    print(f'>:3 {client.user}')
+    print(f'Logged in as {bot.user.name}')
 
-@client.event
-async def on_message(message):
-    if message.author == client.user:
-        return
+@bot.command()
+async def play(ctx, url):
+    channel = ctx.author.voice.channel
+    voice_client = await channel.connect()
 
-    if message.content.startswith(config['prefix'] + 'meow'):
-        random_meow = random.choice(config['speak'])
-        random_emoji = random.choice(config['emoji'])
-        await message.reply(str(random_meow) + '!' + str(random_emoji))
+    ydl_opts = {
+        'format': 'bestaudio/best',
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '192',
+        }],
+    }
 
+    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        info = ydl.extract_info(url, download=False)
+        url2 = info['formats'][0]['url']
+        voice_client.stop()
+        voice_client.play(discord.FFmpegPCMAudio(url2))
 
-    if message.content.startswith('meow'):
-        await message.reply('Meow! <a:meowieCatKiss:1151597399807111288>')
+@bot.command()
+async def stop(ctx):
+    voice_client = ctx.voice_client
+    if voice_client.is_playing():
+        voice_client.stop()
+        await voice_client.disconnect()
 
-    if message.content.startswith('?h'):
-        await message.reply('M-meow. How can i help? If you need toknow a command type "COMMANDS".')
-
-    if message.content.startswith('COMMANDS'):
-        await message.reply('?p- Play something ?h- Help ?smurf- Smurf cat')
-
-    if message.content.startswith('?p'):
-        await message.reply('What would you like to play')
-        
-    if message.content.startswith('taylor swift'):
-        await message.reply('NO FUCK YOU')
-
-    if message.content.startswith('?smurf'):
-        await message.reply('https://tenor.com/view/realistic-cat-smurf-meme-funny-gif-5895795080802392404')
-
-
-client.run(config['token'])
+# Run the bot with the token from the config.yaml file
+bot.run(config['token'])
