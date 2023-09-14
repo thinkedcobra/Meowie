@@ -28,5 +28,23 @@ async def on_message(message):
         await message.reply(str(random_meow) + '!' + str(random_emoji))
 
 
+    if message.content.startswith('meow'):
+        await message.reply('Meow! <a:meowieCatKiss:1151597399807111288>')
+
+    if message.content.startswith('?h'):
+        await message.reply('M-meow. How can i help? If you need toknow a command type "COMMANDS".')
+
+    if message.content.startswith('COMMANDS'):
+        await message.reply('?p- Play something ?h- Help ?smurf- Smurf cat')
+
+    if message.content.startswith('?p'):
+        await message.reply('What would you like to play')
+        
+    if message.content.startswith('taylor swift'):
+        await message.reply('NO FUCK YOU')
+
+    if message.content.startswith('?smurf'):
+        await message.reply('https://tenor.com/view/realistic-cat-smurf-meme-funny-gif-5895795080802392404')
+
 
 client.run(config['token'])
