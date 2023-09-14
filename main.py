@@ -1,5 +1,6 @@
 import discord
 import yaml
+import random
 
 with open("config.yaml", "r") as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
