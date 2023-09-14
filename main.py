@@ -8,9 +8,9 @@ with open('config.yaml', 'r') as config_file:
     config = yaml.safe_load(config_file)
 
 # Define the intents for your bot
-intents = discord.Intents.default()
-intents.typing = False
-intents.presences = False
+intents = discord.Intents.all()
+intents.typing = True
+intents.presences = True
 
 # Create a bot instance with intents
 bot = commands.Bot(command_prefix=config['prefix'], intents=intents)
