@@ -1,7 +1,10 @@
 import discord
 from discord.ext import commands
-import youtube_dl
+from pytube import YouTube
 import yaml
+
+# Set the full path to the FFmpeg executable (replace with your path)
+ffmpeg_executable = '/path/to/ffmpeg'
 
 # Load bot settings from config.yaml
 with open('config.yaml', 'r') as config_file:
@@ -15,29 +18,43 @@ intents.presences = True
 # Create a bot instance with intents
 bot = commands.Bot(command_prefix=config['prefix'], intents=intents)
 
+# Set the FFmpeg executable path for discord.py's FFmpegPCMAudio
+discord.FFmpegPCMAudio.executable = ffmpeg_executable
+
 @bot.event
 async def on_ready():
     print(f'Logged in as {bot.user.name}')
 
 @bot.command()
 async def play(ctx, url):
-    channel = ctx.author.voice.channel
-    voice_client = await channel.connect()
+    # Check if the user is in a voice channel
+    if not ctx.author.voice:
+        await ctx.send("You need to be in a voice channel to use this command.")
+        return
 
-    ydl_opts = {
-        'format': 'bestaudio/best',
-        'postprocessors': [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mp3',
-            'preferredquality': '192',
-        }],
-    }
+    # Fetch the YouTube video
+    try:
+        yt = YouTube(url)
+    except Exception as e:
+        await ctx.send(f"An error occurred while fetching the video: {e}")
+        return
 
-    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        info = ydl.extract_info(url, download=True)
-        url2 = info['formats'][0]['url']
+    # Get the best audio stream
+    audio_stream = yt.streams.filter(only_audio=True).first()
+
+    # Check if an audio stream was found
+    if audio_stream:
+        # Join the user's voice channel
+        voice_channel = ctx.author.voice.channel
+        voice_client = await voice_channel.connect()
+
+        # Download and play the audio stream
+        audio_stream.download()
         voice_client.stop()
-        voice_client.play(discord.FFmpegPCMAudio(url2))
+        voice_client.play(discord.FFmpegPCMAudio(f"{yt.title}.mp4"))
+
+    else:
+        await ctx.send("No audio stream found for this URL.")
 
 @bot.command()
 async def stop(ctx):
