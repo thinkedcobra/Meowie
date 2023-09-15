@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands
 from pytube import YouTube
 import yaml
+import os
+import asyncio  # Import the asyncio module
 
 # Set the full path to the FFmpeg executable (replace with your path)
 ffmpeg_executable = '/path/to/ffmpeg'
@@ -53,6 +55,13 @@ async def play(ctx, url):
         voice_client.stop()
         voice_client.play(discord.FFmpegPCMAudio(f"{yt.title}.mp4"))
 
+        # Wait until the audio finishes playing
+        while voice_client.is_playing():
+            await asyncio.sleep(1)
+
+        # Delete the downloaded mp4 file
+        os.remove(f"{yt.title}.mp4")
+
     else:
         await ctx.send("No audio stream found for this URL.")
 
@@ -65,3 +74,4 @@ async def stop(ctx):
 
 # Run the bot with the token from the config.yaml file
 bot.run(config['token'])
+    
