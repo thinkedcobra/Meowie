@@ -5,6 +5,7 @@ import yaml
 import os
 import asyncio
 from youtubesearchpython import VideosSearch
+import random
 
 # Set the full path to the FFmpeg executable (replace with your path)
 ffmpeg_executable = '/path/to/ffmpeg'
@@ -29,7 +30,7 @@ music_queue = []
 
 @bot.event
 async def on_ready():
-    print(f'Logged in as {bot.user.name}')
+    print(f'>:3 {bot.user.name}')
 
 @bot.event
 async def on_message(message):
@@ -39,8 +40,11 @@ async def on_message(message):
 
     # Check if the message content is "meow" (case-insensitive)
     if message.content.lower() == 'meow':
-        # Send "Meow" as a reply
-        await message.reply('Meow')
+        return
+    if message.content.startswith(config['prefix'] + 'meow'):
+        random_meow = random.choice(config['speak'])
+        random_emoji = random.choice(config['emoji'])
+        await message.reply(str(random_meow) + '!' + str(random_emoji))
 
     await bot.process_commands(message)  # Important to process commands
 
@@ -113,7 +117,7 @@ def play_song(voice_client, song_url):
     audio_stream = yt.streams.filter(only_audio=True).first()
     
     # Download and play the audio stream
-    audio_stream.download()
+    audio_stream.download() 
     voice_client.stop()
     voice_client.play(discord.FFmpegPCMAudio(f"{yt.title}.mp4"))
     
