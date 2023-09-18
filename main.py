@@ -22,6 +22,7 @@ intents.presences = True
 # Create a bot instance with intents
 bot = commands.Bot(command_prefix=config['prefix'], intents=intents)
 
+
 # Set the FFmpeg executable path for discord.py's FFmpegPCMAudio
 discord.FFmpegPCMAudio.executable = ffmpeg_executable
 
@@ -31,6 +32,8 @@ music_queue = []
 @bot.event
 async def on_ready():
     print(f'>:3 {bot.user.name}')
+
+
 
 @bot.event
 async def on_message(message):
